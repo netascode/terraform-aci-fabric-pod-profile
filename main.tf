@@ -1,9 +1,54 @@
-resource "aci_rest" "fvTenant" {
-  dn         = "uni/tn-${var.name}"
-  class_name = "fvTenant"
+locals {
+  pod_blocks = flatten([
+    for selector in var.selectors : [
+      for pod_block in selector.pod_blocks : {
+        key = "${selector.name}/${pod_block.name}"
+        value = {
+          selector_name = selector.name
+          name          = pod_block.name
+          from          = pod_block.from
+          to            = lookup(pod_block, "to", pod_block.from)
+        }
+      }
+    ]
+  ])
+}
+
+resource "aci_rest" "fabricPodP" {
+  dn         = "uni/fabric/podprof-${var.name}"
+  class_name = "fabricPodP"
   content = {
-    name      = var.name
-    nameAlias = var.alias
-    descr     = var.description
+    name = var.name
+  }
+}
+
+resource "aci_rest" "fabricPodS" {
+  for_each   = { for selector in var.selectors : selector.name => selector }
+  dn         = "${aci_rest.fabricPodP.id}/pods-${each.value.name}-typ-range"
+  class_name = "fabricPodS"
+  content = {
+    name = each.value.name
+    type = "range"
+
+  }
+}
+
+resource "aci_rest" "fabricRsPodPGrp" {
+  for_each   = { for selector in var.selectors : selector.name => selector if selector.policy_group != null }
+  dn         = "${aci_rest.fabricPodS[each.value.name].id}/rspodPGrp"
+  class_name = "fabricRsPodPGrp"
+  content = {
+    tDn = "uni/fabric/funcprof/podpgrp-${each.value.policy_group}"
+  }
+}
+
+resource "aci_rest" "fabricPodBlk" {
+  for_each   = { for item in local.pod_blocks : item.key => item.value }
+  dn         = "${aci_rest.fabricPodS[each.value.selector_name].id}/podblk-${each.value.name}"
+  class_name = "fabricPodBlk"
+  content = {
+    name  = each.value.name
+    from_ = each.value.from
+    to_   = each.value.to
   }
 }
