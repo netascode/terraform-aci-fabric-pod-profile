@@ -5,8 +5,8 @@ terraform {
     }
 
     aci = {
-      source  = "netascode/aci"
-      version = ">=0.2.0"
+      source  = "CiscoDevNet/aci"
+      version = ">=2.0.0"
     }
   }
 }
@@ -26,7 +26,7 @@ module "main" {
   }]
 }
 
-data "aci_rest" "fabricPodP" {
+data "aci_rest_managed" "fabricPodP" {
   dn = "uni/fabric/podprof-${module.main.name}"
 
   depends_on = [module.main]
@@ -37,13 +37,13 @@ resource "test_assertions" "fabricPodP" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.fabricPodP.content.name
+    got         = data.aci_rest_managed.fabricPodP.content.name
     want        = module.main.name
   }
 }
 
-data "aci_rest" "fabricPodS" {
-  dn = "${data.aci_rest.fabricPodP.id}/pods-SEL1-typ-range"
+data "aci_rest_managed" "fabricPodS" {
+  dn = "${data.aci_rest_managed.fabricPodP.id}/pods-SEL1-typ-range"
 
   depends_on = [module.main]
 }
@@ -53,19 +53,19 @@ resource "test_assertions" "fabricPodS" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.fabricPodS.content.name
+    got         = data.aci_rest_managed.fabricPodS.content.name
     want        = "SEL1"
   }
 
   equal "type" {
     description = "type"
-    got         = data.aci_rest.fabricPodS.content.type
+    got         = data.aci_rest_managed.fabricPodS.content.type
     want        = "range"
   }
 }
 
-data "aci_rest" "fabricRsPodPGrp" {
-  dn = "${data.aci_rest.fabricPodS.id}/rspodPGrp"
+data "aci_rest_managed" "fabricRsPodPGrp" {
+  dn = "${data.aci_rest_managed.fabricPodS.id}/rspodPGrp"
 
   depends_on = [module.main]
 }
@@ -75,13 +75,13 @@ resource "test_assertions" "fabricRsPodPGrp" {
 
   equal "tDn" {
     description = "tDn"
-    got         = data.aci_rest.fabricRsPodPGrp.content.tDn
+    got         = data.aci_rest_managed.fabricRsPodPGrp.content.tDn
     want        = "uni/fabric/funcprof/podpgrp-POD1-2"
   }
 }
 
-data "aci_rest" "fabricPodBlk" {
-  dn = "${data.aci_rest.fabricPodS.id}/podblk-PB1"
+data "aci_rest_managed" "fabricPodBlk" {
+  dn = "${data.aci_rest_managed.fabricPodS.id}/podblk-PB1"
 
   depends_on = [module.main]
 }
@@ -91,19 +91,19 @@ resource "test_assertions" "fabricPodBlk" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.fabricPodBlk.content.name
+    got         = data.aci_rest_managed.fabricPodBlk.content.name
     want        = "PB1"
   }
 
   equal "from_" {
     description = "from_"
-    got         = data.aci_rest.fabricPodBlk.content.from_
+    got         = data.aci_rest_managed.fabricPodBlk.content.from_
     want        = "1"
   }
 
   equal "to_" {
     description = "to_"
-    got         = data.aci_rest.fabricPodBlk.content.to_
+    got         = data.aci_rest_managed.fabricPodBlk.content.to_
     want        = "2"
   }
 }

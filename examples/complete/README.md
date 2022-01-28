@@ -14,7 +14,7 @@ Note that this example will create resources. Resources can be destroyed with `t
 ```hcl
 module "aci_fabric_pod_profile" {
   source  = "netascode/fabric-pod-profile/aci"
-  version = ">= 0.0.1"
+  version = ">= 0.1.0"
 
   name = "POD1-2"
   selectors = [{
@@ -27,6 +27,5 @@ module "aci_fabric_pod_profile" {
     }]
   }]
 }
-
 ```
 <!-- END_TF_DOCS -->

@@ -14,7 +14,7 @@ locals {
   ])
 }
 
-resource "aci_rest" "fabricPodP" {
+resource "aci_rest_managed" "fabricPodP" {
   dn         = "uni/fabric/podprof-${var.name}"
   class_name = "fabricPodP"
   content = {
@@ -22,9 +22,9 @@ resource "aci_rest" "fabricPodP" {
   }
 }
 
-resource "aci_rest" "fabricPodS" {
+resource "aci_rest_managed" "fabricPodS" {
   for_each   = { for selector in var.selectors : selector.name => selector }
-  dn         = "${aci_rest.fabricPodP.dn}/pods-${each.value.name}-typ-range"
+  dn         = "${aci_rest_managed.fabricPodP.dn}/pods-${each.value.name}-typ-range"
   class_name = "fabricPodS"
   content = {
     name = each.value.name
@@ -33,18 +33,18 @@ resource "aci_rest" "fabricPodS" {
   }
 }
 
-resource "aci_rest" "fabricRsPodPGrp" {
+resource "aci_rest_managed" "fabricRsPodPGrp" {
   for_each   = { for selector in var.selectors : selector.name => selector if selector.policy_group != null }
-  dn         = "${aci_rest.fabricPodS[each.value.name].dn}/rspodPGrp"
+  dn         = "${aci_rest_managed.fabricPodS[each.value.name].dn}/rspodPGrp"
   class_name = "fabricRsPodPGrp"
   content = {
     tDn = "uni/fabric/funcprof/podpgrp-${each.value.policy_group}"
   }
 }
 
-resource "aci_rest" "fabricPodBlk" {
+resource "aci_rest_managed" "fabricPodBlk" {
   for_each   = { for item in local.pod_blocks : item.key => item.value }
-  dn         = "${aci_rest.fabricPodS[each.value.selector_name].dn}/podblk-${each.value.name}"
+  dn         = "${aci_rest_managed.fabricPodS[each.value.selector_name].dn}/podblk-${each.value.name}"
   class_name = "fabricPodBlk"
   content = {
     name  = each.value.name
