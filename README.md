@@ -13,7 +13,7 @@ Location in GUI:
 ```hcl
 module "aci_fabric_pod_profile" {
   source  = "netascode/fabric-pod-profile/aci"
-  version = ">= 0.1.0"
+  version = ">= 0.2.0"
 
   name = "POD1-2"
   selectors = [{
@@ -32,7 +32,7 @@ module "aci_fabric_pod_profile" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aci"></a> [aci](#requirement\_aci) | >= 2.0.0 |
 
 ## Providers

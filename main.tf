@@ -7,7 +7,7 @@ locals {
           selector_name = selector.name
           name          = pod_block.name
           from          = pod_block.from
-          to            = lookup(pod_block, "to", pod_block.from)
+          to            = pod_block.to != null ? pod_block.to : pod_block.from
         }
       }
     ]
