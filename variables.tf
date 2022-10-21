@@ -13,11 +13,12 @@ variable "selectors" {
   type = list(object({
     name         = string
     policy_group = optional(string)
-    pod_blocks = list(object({
+    type         = optional(string, "range")
+    pod_blocks = optional(list(object({
       name = string
       from = number
       to   = optional(number)
-    }))
+    })), [])
   }))
   default = []
 
@@ -33,6 +34,13 @@ variable "selectors" {
       for s in var.selectors : s.policy_group == null || can(regex("^[a-zA-Z0-9_.-]{0,64}$", s.policy_group))
     ])
     error_message = "`policy_group`: Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+
+  validation {
+    condition = alltrue([
+      for s in var.selectors : contains(["all", "range"], s.type)
+    ])
+    error_message = "`type`: Allowed values are `all` or `range`."
   }
 
   validation {

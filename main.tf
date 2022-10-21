@@ -24,12 +24,11 @@ resource "aci_rest_managed" "fabricPodP" {
 
 resource "aci_rest_managed" "fabricPodS" {
   for_each   = { for selector in var.selectors : selector.name => selector }
-  dn         = "${aci_rest_managed.fabricPodP.dn}/pods-${each.value.name}-typ-range"
+  dn         = "${aci_rest_managed.fabricPodP.dn}/pods-${each.value.name}-typ-${each.value.type == "all" ? "ALL" : each.value.type}"
   class_name = "fabricPodS"
   content = {
     name = each.value.name
-    type = "range"
-
+    type = each.value.type == "all" ? "ALL" : each.value.type
   }
 }
 
