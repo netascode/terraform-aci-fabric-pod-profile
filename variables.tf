@@ -9,7 +9,7 @@ variable "name" {
 }
 
 variable "selectors" {
-  description = "List of selectors. Allowed values `from`: 1-255. Allowed values `to`: 1-255."
+  description = "List of selectors. ALlowed values `type`: `all`, `range`. Default value `type`: `range`. Allowed values `from`: 1-255. Allowed values `to`: 1-255."
   type = list(object({
     name         = string
     policy_group = optional(string)
